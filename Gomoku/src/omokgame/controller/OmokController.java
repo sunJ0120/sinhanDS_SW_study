@@ -1,4 +1,5 @@
-package Gomoku;
+package omokgame.controller;
+
 /*
  * 구조 리팩토링 ver2 [2025.04.14]
  * Omok에서 하던 로직 체크 업무 이전
@@ -9,19 +10,25 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
+import omokgame.Board;
+import omokgame.Player;
+
 public class OmokController {
 	Player user;
     Player computer = new Player("컴퓨터", "X");
     final int BOARD_SIZE = 19;
     Board board;
+    BoardController boardControll;
     int startFlag;
     BufferedReader br;
 	
 	//생성자에서 객체 주입
-	OmokController(){
+    public OmokController(){
 		this.user = new Player("사용자", "O");
 		this.computer = new Player("컴퓨터", "X");
-		this.board = new Board(BOARD_SIZE);
+		board.setInstance(BOARD_SIZE); //싱글톤 static으로 생성했으므로 바로 객체에 접근한다.
+		this.board = board.getInstance();
+		this.boardControll = new BoardController(board);
 		this.startFlag = 0;
 		br = new BufferedReader(new InputStreamReader(System.in)); //낭비를 막기 위해 한 번만 생성
 	}
@@ -62,17 +69,17 @@ public class OmokController {
 		currentPlayer.setX(st.nextToken().toUpperCase().charAt(0) - 'A');
 		currentPlayer.setY(Integer.parseInt(st.nextToken()));
 		
-		if(!isTrueRange(currentPlayer.getX(), currentPlayer.getY())) {
+		if(!boardControll.isTrueRange(currentPlayer.getX(), currentPlayer.getY())) {
     		System.out.println("보드판을 넘어서 둘 수 없습니다.");
     		return false; //종료
     	}
     	
-    	if(!isPlaceable(currentPlayer.getX(), currentPlayer.getY())) {
+    	if(!boardControll.isPlaceable(currentPlayer.getX(), currentPlayer.getY())) {
     		System.out.println("이미 돌이 있는곳에는 둘 수 없습니다.");
     		return false; //종료
     	}
     	
-    	board.map[currentPlayer.getY()][currentPlayer.getX()] = currentPlayer.getStone();
+    	board.getMap()[currentPlayer.getY()][currentPlayer.getX()] = currentPlayer.getStone();
     	return true;
     }
     
@@ -133,12 +140,12 @@ public class OmokController {
     	do{ //player의  stone일때만 움직인다.
     		startX += direction[0];
     		startY += direction[1];
-    	}while(isTrueRange(startX, startY) && board.map[startY][startX].equals(player.getStone())); //캡슐화 유지를 위해 player.getStone()으로 변경
+    	}while(boardControll.isTrueRange(startX, startY) && board.getMap()[startY][startX].equals(player.getStone())); //캡슐화 유지를 위해 player.getStone()으로 변경
     	
     	startX -= direction[0]; //한 번 반대 방향으로 계산.
     	startY -= direction[1]; //한 번 반대 방향으로 계산.
     	//찾은 방향의 반대로 가야 전체 돌 수를 셀 수 있다.
-    	while(isTrueRange(startX, startY) && board.map[startY][startX].equals(player.getStone())) { 
+    	while(boardControll.isTrueRange(startX, startY) && board.getMap()[startY][startX].equals(player.getStone())) { 
     		//player의  stone일때만 움직인다.
     		//또한 움질일때도 움직이는 곳이 맞는 인덱스인지 체크해야 한다. (이거 먼저 체크해야 인덱스 에러 안남)
     		cnt++;
@@ -151,22 +158,5 @@ public class OmokController {
     		return true;
     	}
 		return false;
-    }
-    
-    //인덱스 체크
-    public boolean isTrueRange(int x, int y) { //올바른 범위인지
-    	//보드판 넘어서 두는지 체크 (이거 먼저 체크해야함)
-    	if((x >= board.size || x < 0) || (y >= board.size || y < 0)) { //0보다 작지 않게 추가
-    		return false;
-    	}
-    	return true;
-    }
-    //isTrueRange에서 따로 분리... columnCheck를 위해
-    public boolean isPlaceable(int x, int y) {
-    	//이미 있는 곳에 두는지 체크
-    	if(!board.map[y][x].equals(".")) { //비지 않은곳에 두려고 할 경우
-    		return false;
-    	}
-    	return true;
     }
 }

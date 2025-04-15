@@ -1,9 +1,11 @@
-package Gomoku;
+package omokgame;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
+
+import omokgame.controller.OmokController;
 
 /*
  * 구조 리팩토링 ver1 [2025.04.14]

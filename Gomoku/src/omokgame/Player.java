@@ -1,4 +1,4 @@
-package Gomoku;
+package omokgame;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +16,7 @@ public class Player {
     private int x; 
     private int y;
     
-    Player(String name, String stone) {
+    public Player(String name, String stone) {
         this.name = name;
         this.stone = stone;
     }

@@ -1,14 +1,20 @@
-package Gomoku;
+package omokgame;
 
-/* 
- * 다운님 보드판!
+import lombok.Getter;
+import lombok.Setter;
+
+/*
+ * Board는 게임에서 단 하나만 존재해야 하므로 싱글톤으로 생성
  */
 
+@Getter
+@Setter
 public class Board {
-	int size;
+	private int size;
 	String[][] map;
+	private static Board instance;
 
-	Board(int size) { // 기본 보드판 생성
+	private Board(int size) { // 기본 보드판 생성
 		this.size = size;
 		map = new String[size][size];
 
@@ -17,6 +23,16 @@ public class Board {
 				map[row][col] = ".";
 			}
 		}
+	}
+	
+	public static void setInstance(int size) {
+		if(instance == null) {
+	        instance = new Board(size);
+	    }
+	}
+	
+	public static Board getInstance() {
+	    return instance;
 	}
 
 	public void print() { // 보드판 좌표 출력
