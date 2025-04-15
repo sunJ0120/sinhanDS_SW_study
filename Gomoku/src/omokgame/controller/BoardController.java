@@ -1,6 +1,7 @@
 package omokgame.controller;
 
 import omokgame.Board;
+import omokgame.Player;
 
 /*
  * BoardController 요소
