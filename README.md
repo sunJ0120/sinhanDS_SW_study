@@ -21,6 +21,6 @@
 ---
 
 ## 🛠️ 기술 스택
-- Java 17+
+- Java 11+
 - IDE: IntelliJ IDEA
 - Git / GitHub로 버전 관리
