@@ -13,7 +13,7 @@ import omokgame.controller.OmokController;
  * main class에는 start()만 두고, 일 처리를 OmokController가 하도록 변경
  */
 
-public class Omok {
+public class OmokApplication {
     public static void main(String[] args)  throws IOException{
     	OmokController omokController = new OmokController();
     	omokController.start();
