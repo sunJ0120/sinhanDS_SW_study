@@ -19,11 +19,7 @@ Java로 구현한 간단한 콘솔 기반 오목 게임입니다.
    - 승자가 결정되기 전까지 사용자와 컴퓨터가 번갈아가며 돌을 놓음
 
 ## 🗂️ 폴더 구조
-Gomoku/ 
-├── Board.java 
-├── OmokController.java 
-├── Player.java 
-├── ... └── README.md
+<pre> ``` Gomoku/ ├── Board.java ├── Omok.java ├── OmokController.java ├── Player.java └── README.md ``` </pre>
 
 ## 🖼️ 오목 판정 로직 (추후 이미지 추가 예정)
 - 대각선, 수평, 수직을 모두 검사하는 방식
