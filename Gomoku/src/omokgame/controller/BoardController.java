@@ -13,7 +13,7 @@ import omokgame.Player;
 public class BoardController {
 	Board board;
 	
-	BoardController(Board board){ //보드 주입
+	public BoardController(Board board){ //보드 주입
 		this.board = board;
 	}
 	//인덱스 체크

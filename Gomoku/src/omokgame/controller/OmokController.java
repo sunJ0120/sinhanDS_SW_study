@@ -1,8 +1,8 @@
 package omokgame.controller;
 
 /*
- * 구조 리팩토링 ver2 [2025.04.14]
- * Omok에서 하던 로직 체크 업무 이전
+ * 구조 리팩토링 ver3 [2025.04.15]
+ * Omok의 로직 양방향 탐색으로 전체 변경 (RuleChecker에서 삼삼과의 통일성을 위해...)
  */
 
 import java.io.BufferedReader;
@@ -12,6 +12,8 @@ import java.util.StringTokenizer;
 
 import omokgame.Board;
 import omokgame.Player;
+import omokgame.rule.RuleChecker;
+import omokgame.util.StoneCount;
 
 public class OmokController {
 	BufferedReader br;
@@ -23,6 +25,7 @@ public class OmokController {
     Board board;
     BoardController boardController;
     
+    StoneCount stoneCount;
     RuleChecker ruleChecker;
     
     int startFlag;
@@ -38,8 +41,9 @@ public class OmokController {
 		board.setInstance(BOARD_SIZE); //싱글톤 static으로 생성했으므로 바로 객체에 접근한다.
 		this.board = board.getInstance();
 		this.boardController = new BoardController(board);
-		
-		this.ruleChecker = new RuleChecker(boardController);
+	
+		this.stoneCount = new StoneCount(boardController);
+		this.ruleChecker = new RuleChecker(stoneCount);
 		
 		this.startFlag = 0;
 	}
@@ -59,6 +63,13 @@ public class OmokController {
 			//삼삼규칙 위반시 반책패 처리
 			if(ruleChecker.isSamSam(currentPlayer, board)) {
 				System.out.println("삼삼규칙 위반으로 반칙입니다." + currentPlayer.getName() + "의 패배!");
+				board.print();
+				break;
+			}
+			
+			//육목규칙 위반시 반책패 처리
+			if(ruleChecker.isSix(currentPlayer, board)) {
+				System.out.println("육목규칙 위반으로 반칙입니다." + currentPlayer.getName() + "의 패배!");
 				board.print();
 				break;
 			}
@@ -108,61 +119,23 @@ public class OmokController {
     
     //이기는 조건에 있는지를 검사한다.
     public boolean isWin(Player player) {
-    	//하나라도 충족하면 오목이다.
-    	if(rowCheck(player) || columnCheck(player) || leftToRightDia(player) || rightToLeftDia(player)) {
-    		return true;
+    	int cntOmok = 0;
+		if(stoneCount.count(board, player, new int[]{-1,0}, new int[]{1,0}) == 5) { //가로체크
+			cntOmok++;
+		}
+		if(stoneCount.count(board, player, new int[]{0,-1}, new int[]{0,1}) == 5) { //세로 체크
+			cntOmok++;
+		}
+		if(stoneCount.count(board, player, new int[]{-1,-1}, new int[]{1,1}) == 5) { //왼오 대각선 
+			cntOmok++;
+		}
+		if(stoneCount.count(board, player, new int[]{-1,1}, new int[]{1,-1}) == 5) { //오왼 대각선
+			cntOmok++;
+		}
+		
+		if(cntOmok >= 1) { //한개 이상이면 오목
+			return true;
     	}
-    	return false;
+		return false; //오목 아님.
     }
-    
-	public boolean rowCheck(Player player) { //가로 체크  	
-    	return check(player, new int[]{-1,0}, new int[]{1,0});
-    }
-	public boolean columnCheck(Player player) { //세로 체크  	
-    	return check(player, new int[]{0,-1}, new int[]{0,1});
-    }
-	public boolean leftToRightDia(Player player) { //왼오 대각선  	
-    	return check(player, new int[]{-1,-1}, new int[]{1,1}); 
-    }
-	public boolean rightToLeftDia(Player player) { //오왼 대각선 	
-    	return check(player, new int[]{-1,1}, new int[]{1,-1});
-    }
-	
-    public boolean check(Player player, int[] leftMove, int[] rightMove) { //가로 체크  	
-    	int startX = player.getX();
-    	int startY = player.getY();
-    	
-    	int cnt = 1; //자기자신 포함
-    	
-    	cnt += calculCntAndCheckEdge(player, leftMove); //왼쪽 돌 수
-    	cnt += calculCntAndCheckEdge(player, rightMove); //오른쪽 돌 수
-    	
-    	if(cnt == 5) { 
-    		return true;
-    	}
-    	return false;
-    }
-    
-    public int calculCntAndCheckEdge(Player player, int[] move) { //cnt하고 끝이 비어 있는지를 체크
-    	int startX = player.getX();
-    	int startY = player.getY();
-    	
-    	int cnt = 0; //자기자신 미포함을 위해
-    	
-    	int xInd = startX;
-    	int yInd = startY;
-    	
-    	//leftCheck
-    	while(boardController.isTrueRange(xInd + move[0], yInd + move[1]) == true && board.getMap()[yInd += move[1]][xInd += move[0]].equals(player.getStone())){
-    		cnt++;
-    	} //나중에 해야 끝 체크가 가능함. 상관은 없다만...
-    	
-    	//끝 체크
-    	if(!board.getMap()[yInd][xInd].equals(".")) {
-    		return -1; //한쪽이라도 안 되어 있으면 false;
-    	}else {
-    		return cnt; //끝이 비어 있어야 cnt를 return
-    	}
-    }
- 
 }
