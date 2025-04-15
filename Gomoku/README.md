@@ -22,10 +22,13 @@ Java로 구현한 간단한 콘솔 기반 오목 게임입니다.
 ```bash
 Gomoku/ 
 ├── Board.java 
-├── Omok.java 
-├── OmokController.java 
+├── Omok.java
 ├── Player.java 
-└── README.md
+├── README.md
+└── OmokController.java 
+      ├── RuleChecker.java
+      ├── BoardController.java
+      └── OmokController.java 
 ```
 
 
